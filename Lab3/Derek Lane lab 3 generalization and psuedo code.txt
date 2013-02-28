@@ -1,0 +1,144 @@
+Generalization for the customer:  In order to provide the customer with an encapsulated mergesort capability I would write a mergesort class which used an array of type <Template> T.  That way it wouldn’t matter what the customer wanted to sort. When the user instantiated the mergesort class they would set the object type for the array.
+
+The class would need generic add and get functions.  add would add a record to the array (un-ordered), the get function would take an empty an empty <Template> T array of this.getsize() as a parameter and populate it with the sorted objects. 
+
+The class would need standard constructor and destructor methods (due to use of dynamic memory).
+
+The class would need a sort method as well as an isSorted boolean method which would return to false if a new object had been added since the last time .sort was called (and would return false initially).
+
+Members would include:
+
+<Template> T array
+Boolean sorted
+Int size
+
+This solution assumes that the customer will only pass comparable objects to the mergesort class.  Specifically they passed object must return legitimate boolean values for ==, < and <=.
+The object class would also need overload the “=” operator to return a deep copy.
+
+
+
+Lab 3 Psuedo Code (base on mergesort.cpp provided by Prof Stewart, I know this wasn’t required, but paraphrasing it helped me understand the code)
+
+/******************************************************************
+Method Read (pointer to address of array of integers, integer address size)
+
+** read in data**
+
+Integer intVal
+Pointer to integer tmp;
+
+Open the filestream for a given file;
+
+Start a read loop to get each value:
+	Read the next value
+	If the value is eof, end the loop
+
+	Set tmp = new integer array of size+1 (and increment size)
+	Store inVal at the last location in tmp (size-1)
+
+	If size is greater than 1
+		Load each record in tmp with corresponding record from the passed array of ints
+		Delete the array that was passed as a parameter
+	
+	Set the passed array to a new int array with ‘size’ records
+	Load all the records from tmp into the new array at the parameter location
+
+	Delete the temp array
+
+
+/******************************************************************
+*   write
+
+**write out the array**
+
+Method write (pointer to an integer array, array location of first, size)
+Print out each integer, separated by spaces, with endl after last
+
+
+/******************************************************************
+*  pseudocode for func merge
+*  inside a wrapper because user wants to pass size instead of last index
+*  
+Method merge (array of objects, integer first, integer last)
+     create int index to track write point in temp array, set = 0
+     create temp array the size of the current subArray (last-first+1)
+     set index to lower array:  index1 = first
+     set index to upper array: index2 = mid = ((first + last) / 2)+1
+
+while index is less than or equal to the record at ‘last’
+       if index1 is less than the midpoint and index 2 is less than or equal to last
+       	if the item at index 1 is less than the item at index 2
+			copy the item from index 1 into temp array index
+			increment index 1
+       	else (if the item at index 1 is greater than or equal to the item at index 2)
+        	copy the item from index 2 into temp array index
+       increment index 2
+       end if-else
+       else if index1 < mid (implies index to is greater than last, thus upper array is complete but lower not)
+			copy the item from index 1 into temp array index
+			increment index 1
+       else if index2 <= last (implies index1 > than mid, thus lower array complete but not upper)
+       	copy the item from index 2 into temp array index
+       increment index 2
+       end if-else
+       increment index to temp array
+end while
+
+ reset index to 0
+ reset index1 to first
+
+copy the reorder temp array over the source section of the array
+while index <= last
+       array item index1 = temp array item index
+       increment index1
+       increment index
+       end do-while
+delete the temp array
+
+end func
+
+
+/******************************************************************
+*  pseudocode for func mergesortPrivate
+*  inside a wrapper because user wants to pass size instead of last index
+*   
+(all this does is assign indices and recurs ‘til base case, all the actual work is done in merge)
+
+Method mergesortPrivate(array of objects, first index, last index)
+
+     if first < last then we haven't hit the base case
+        set midpoint value: midpoint = (first + last) / 2
+        mergesortPrivateleft half of array (array of objects, first, midpoint)
+        mergesortPrivateright half of array (array of objects, midpoint+1, last)
+	endif 
+     
+     after all the recursing, we hit the base case and:
+     merge sorted halves (array of objects, first, last)   
+endfunc
+
+
+/******************************************************************
+*  pseudocode for func mergesort
+*  this is a wrapper because user wants to pass size instead of last index
+* 
+
+Method mergesort(array of objects, first index, size)
+    call mergesortPrivate
+	Method mergesortPrivate(array of objects, first index, size - 1)
+
+
+/******************************************************************
+*   main
+
+Integer size = 0
+arr is a pointer to an int
+
+Call read, tell it that arr is actually a pointer to an array of integers, pass it address of size
+
+Sort the array at arr from 0 to size (this will be called recursively)
+   
+Write arr to console from 0 to size
+
+Delete arr
+   
+}
